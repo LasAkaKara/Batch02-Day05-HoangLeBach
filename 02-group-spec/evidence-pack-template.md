@@ -1,13 +1,9 @@
-# Template — Evidence Pack
-
-Nộp kèm thin SPEC cuối Day 05.
-
 ## 1. Nhóm và track
 
-**Tên nhóm:**  
-**Track:**  
-**Product/app đã chọn:**  
-**Build slice đang nghĩ:**  
+**Tên nhóm:**  Chill Guys
+**Track:**  Travel and Hospitality
+**Product/app đã chọn:**  Trip.com
+**Build slice đang nghĩ:**  Khách du lịch muốn tìm kiếm phương tiện di chuyển -> AI hỏi 3 câu -> Gợi ý nhiều phương án hợp lý -> Failure: flag lại, chuyển hướng người dùng tự kiếm
 
 ## 2. Self-use evidence
 
