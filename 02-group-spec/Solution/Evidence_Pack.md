@@ -32,3 +32,57 @@ Qua các thử nghiệm, Trip.com chatbot hiện tại hoạt động giống FA
 - hoạt động thống nhất giữa `flight / train / car`
 
 Điểm gãy quan trọng nhất cho build slice của nhóm là: người dùng muốn nói nhu cầu di chuyển bằng ngôn ngữ tự nhiên, nhưng chatbot hiện tại bắt người dùng tự chuyển nhu cầu đó thành thao tác tìm kiếm thủ công.
+
+## 3. User / review / social evidence
+
+Nguồn có thể là review App Store/Play, group, comment, phỏng vấn nhanh, hoặc nguồn public khác.
+
+| Quote / review / observation | Nguồn | User là ai? | Pain/failure mode |
+|---|---|---|---|
+| "Mình muốn đi từ Sài Gòn ra Đà Nẵng nhưng không biết nên đi máy bay hay xe. Để check giá vé máy bay, mình phải mở 1 tab. Rồi lại phải out ra 1 tab khác để check vé tàu." | Phỏng vấn dự kiến - cần kiểm chứng với người từng đi liên tỉnh | Người đi du lịch hoặc về quê, tự đặt vé | Decision overload: user thiếu một nơi gom lựa chọn và giải thích nên chọn phương tiện nào theo bối cảnh. |
+| "Chatbot chỉ gửi mình sang trang đặt vé, không hỏi thêm ngày đi, ngân sách hay mình ưu tiên rẻ hay nhanh. Vậy thì mình vẫn phải tự làm gần hết." | Review/phỏng vấn dự kiến - cần kiểm chứng bằng review app hoặc phỏng vấn nhanh | User muốn hỏi bằng ngôn ngữ tự nhiên thay vì tự bấm form | Low-confidence path yếu: chatbot không chủ động hỏi lại thông tin thiếu và không chuyển câu hỏi thành search query cụ thể. |
+| "Giá ban đầu nhìn rẻ, nhưng lúc chọn hành lý, điểm đón hoặc đến bước thanh toán thì tổng tiền khác. Nếu bot tư vấn mà không nói rõ nguồn giá và thời điểm kiểm tra thì mình không dám tin." | Review/phỏng vấn dự kiến - cần kiểm chứng với người từng đặt vé máy bay/xe khách | Người nhạy cảm về giá, cần quyết định nhanh nhưng sợ phí ẩn | Trust failure: cần hiển thị tổng giá, phí phụ, `last_checked_at`, chính sách hành lý/hoàn hủy và link xác nhận trên website chính thức. |
+
+## 4. Competitor / analog evidence
+
+| App / mô hình tham khảo | Họ xử lý task này thế nào? | Pattern học được | Có áp dụng trong 1 ngày không? |
+|---|---|---|---|
+| **Layla.ai** | Khi người dùng chat "Tôi muốn tìm chuyến đi...", bot tự nhận diện điểm đi/đến, nếu thiếu thông tin (như ngày đi, số người đi,khả năng tài chính), bot sẽ hỏi lại từng bước (slot-filling) và hiển thị danh sách các câu trả lời ngắn gọn, dễ hiểu ngay trong chat. <a href="Screenshots/layla-1.png"><img src="Screenshots/layla-1.png" alt="Layla screenshot 1" width="220"></a> <a href="Screenshots/layla-2.png"><img src="Screenshots/layla-2.png" alt="Layla screenshot 2" width="220"></a>| **Slot-filling hội thoại:** Hỏi lần lượt các trường thông tin còn thiếu.<br>**Interactive Widget:** Trả kết quả tìm kiếm ngay trong giao diện chat dưới dạng trực quan, dễ đọc. | **Có:** Chúng ta chỉ giả lập (mock/prototype) API trích xuất thực thể bằng LLM và thiết kế UI dạng widget ngay tại chatbot mockup để demo. |
+| Rome2Rio | Bắt đầu từ nhu cầu đi từ A đến B, rồi so sánh nhiều phương thức như máy bay, xe, tàu, ô tô. | Multi-modal route planning: không ép user chọn dịch vụ trước; hệ thống tự đề xuất mode phù hợp. | Có. Mock 3 phương án: xe khách, máy bay, mixed route. |
+| Skyscanner / Google Flights | Hiển thị nhiều lựa chọn bay, cho sort/filter theo giá, giờ bay, duration, hãng và redirect sang nơi đặt vé. | Comparison table, provider cards, `booking_url`, timestamp giá, lựa chọn tốt nhất theo tiêu chí. | Có. Áp dụng cho bảng so sánh flight/bus bằng mock data và link-out. |
+| VeXeRe | Tập trung vào xe khách Việt Nam: nhà xe, giá, giờ đi, điểm đón/trả, loại xe, rating. | Bus-specific fields: provider, pickup/dropoff, duration, rating, refund policy rất quan trọng khi so với máy bay. | Có. Mock schema xe khách sát thị trường Việt Nam. |
+
+---
+
+## 5. Evidence -> Insight
+
+```text
+Evidence nổi bật nhất:
+User cung cấp đầy đủ thông tin tìm chuyến bay (Hà Nội, Phú Quốc, cuối tuần này hoặc Sài Gòn, Đà Nẵng, 10/6) nhưng chatbot hoàn toàn phớt lờ các biến số này và chỉ trả về hướng dẫn chung để user tự đi tìm.
+
+Insight:
+User khi vào chat không chỉ muốn được "chỉ đường" hay đọc tài liệu hướng dẫn. 
+Thật ra họ cần "giảm tải thao tác nhập liệu" (cognitive & physical load), muốn hệ thống tự động điền các thông tin họ đã nói và hiển thị kết quả ngay lập tức để họ chọn.
+
+Opportunity:
+AI có thể giúp bằng cách tự động nhận diện intent tìm kiếm chuyến đi, trích xuất điểm đi/điểm đến/ngày đi từ câu nói tự nhiên của user và điền vào form tìm kiếm (widget) trong chat.
+```
+
+---
+
+## 6. Evidence đổi SPEC như thế nào?
+
+* [ ] Đổi user chính.
+* [x] Đổi pain statement.
+* [x] Đổi build slice.
+* [x] Đổi Auto/Aug decision.
+* [x] Đổi 4 paths.
+* [x] Đổi failure mode.
+* [ ] Đổi owner/test plan.
+
+**Thay đổi quan trọng:**
+```text
+Trước evidence, nhóm định: Làm một chatbot tổng quát trả lời mọi thông tin về du lịch.
+Sau evidence, nhóm đổi thành: Chỉ tập trung duy nhất vào build slice "Hỗ trợ tìm kiếm chuyến đi trực tiếp" thông qua trích xuất thực thể hội thoại (Slot-filling) và hiển thị kết quả bằng Widget UI trong chat (chứ không trả về text hay link FAQ).
+Lý do: Bằng chứng thực tế cho thấy điểm gãy lớn nhất của chatbot hiện tại là không xử lý được các thông số đầu vào cụ thể của user, biến trải nghiệm hội thoại trở nên vô dụng.
+```
